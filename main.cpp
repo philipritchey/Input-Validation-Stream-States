@@ -4,14 +4,7 @@
 #include <string>
 #include "functions.hpp"
 
-/*
-TODO(student): define functions
-    std::istream& getint(std::istream&, int&);
-    std::istream& getdouble(std::istream&, double&);
-    std::istream& getbool(std::istream&, bool&);
-that attempt to read a value (of the specified type) from the specified input stream and throw a std::runtime_error if the input is invalid.
-note: no need to "recover" the stream
-*/
+// TODO(student): goto functions.cpp
 
 // DO NOT CHANGE ANY OF THIS CODE
 
@@ -19,7 +12,7 @@ note: no need to "recover" the stream
 template <typename T>
 std::istream& do_getT(std::istream&(*getT_func)(std::istream&,T&), std::istream& input_stream, T& value) {
     try {
-        // getint(input_stream, value);
+        // e.g. "getint(input_stream, value);"
         getT_func(input_stream, value);
         std::cout << value << std::endl;
     } catch (const std::runtime_error& err) {
@@ -34,8 +27,10 @@ int main() {
     std::string function, stream;
     std::cin >> function >> stream;
     
-    // take advantage of polymorphism to reduce code duplication / simply the code
+    // this block takes advantage of polymorphism to reduce code duplication / simply the code
     std::istream* input_stream;
+    std::istringstream sin;
+    std::ifstream fin;
     if (stream == "cin") { 
         input_stream = &std::cin;
     } else if (stream.front() == '"') { 
@@ -43,10 +38,12 @@ int main() {
             std::cout << "missing expected '\"' at end of string: " << stream << std::endl;
             return 1;
         }
-        std::istringstream sin(stream.substr(1, stream.length()-2));
+        // set the contents of the stream
+        sin.str(stream.substr(1, stream.length()-2));
         input_stream = &sin;
     } else {
-        std::ifstream fin(stream);
+        // open the file
+        fin.open(stream);
         if (!fin.is_open()) {
             std::cout << "could not open file: " << stream << std::endl;
             return 1;
@@ -54,7 +51,7 @@ int main() {
         input_stream = &fin;
     }
     
-    // do the right thing
+    // this block does the right thing
     if (function == "getint") {
         int i;
         do_getT(&getint, *input_stream, i);
